@@ -18,15 +18,14 @@ services:
     # https://on.cypress.io/command-line#cypress-open
     entrypoint: cypress open --project /e2e
     environment:
-      # pass environment variable DISPLAY to show Cypress GUI on the host system
-      # typically you get the IP of the host system and set DISPLAY
+      # get the IP address of the host machine and allow X11 to accept
+      # incoming connections from that IP address
       #   IP=$(ipconfig getifaddr en0)
+      #   /usr/X11/bin/xhost + $IP
+      # then pass the environment variable DISPLAY to show Cypress GUI on the host system
       #   DISPLAY=$IP:0
-      # run docker-compose with
-      #   docker-compose up --exit-code-from cypress
       - DISPLAY
     volumes:
-      # allow connecting from Docker container to
-      # external XVFB server running on the host machine
-      # see https://sourabhbajaj.com/blog/2017/02/07/gui-applications-docker-mac/
+      # for Cypress to communicate with the X11 server pass this socket file
+      # in addition to any other mapped volumes
       - /tmp/.X11-unix:/tmp/.X11-unix
