@@ -1,6 +1,8 @@
 # cypress-open-from-docker-compose
 
-Forked from [mtlynch/hello-world-cypress](https://github.com/mtlynch/hello-world-cypress) that allows to run a project and its Cypress end-to-end tests using docker-compose. The initial setup is well described in ["Easy End-to-End Testing with Cypress."](https://mtlynch.io/easy-cypress/).
+Forked from [mtlynch/hello-world-cypress](https://github.com/mtlynch/hello-world-cypress) that allows to run a project and its Cypress end-to-end tests using docker-compose. The initial setup is well described in ["End-to-End Testing Web Apps: The Painless Way."](https://mtlynch.io/painless-web-app-testing/).
+
+Also read ["Run Cypress with a single Docker command"](https://www.cypress.io/blog/2019/05/02/run-cypress-with-a-single-docker-command/).
 
 ## Run headless tests
 
