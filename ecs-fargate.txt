@@ -3,8 +3,6 @@ https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-far
 cluster = cypressinit
 config_name = cypressinit
 role_name = ecsTaskExecutionRole
-Access_key = AKIA3CYKIVHLI3MPUXUY
-Secret_key = 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
 profile_name = cypressinitprofile
 region = eu-west-1
 
