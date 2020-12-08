@@ -4,4 +4,6 @@ RUN mkdir /app
 COPY main.go /app/main.go
 WORKDIR /app
 
+EXPOSE 8080
+
 ENTRYPOINT go run main.go

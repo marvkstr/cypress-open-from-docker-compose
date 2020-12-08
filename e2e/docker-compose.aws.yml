@@ -5,19 +5,34 @@ version: '3'
 services:
   # this is the web application we are going to test
   sentimentalyzer:
-    image: sentimentalyzer
+    image: 761841363414.dkr.ecr.eu-west-1.amazonaws.com/sentimentalyzer:latest
     environment:
       - PORT=8080
     ports:
       - 8080:8080
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ec2-cypress-init-sent
+        awslogs-region: eu-west-1
+        awslogs-stream-prefix: web
   # Cypress container
   cypress:
     # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
-    image: cypress
+    image: 761841363414.dkr.ecr.eu-west-1.amazonaws.com/cypress:latest
     depends_on:
       - sentimentalyzer
     environment:
       # pass base url to test pointing at the web application
       - CYPRESS_baseUrl=http://sentimentalyzer:8080
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ec2-cypress-init-cypr
+        awslogs-region: eu-west-1
+        awslogs-stream-prefix: web
     # share the current folder as volume to avoid copying
     working_dir: /e2e
+
+volumes:
+  mydata:

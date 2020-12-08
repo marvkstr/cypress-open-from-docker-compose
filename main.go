@@ -22,32 +22,54 @@ func main() {
 	http.HandleFunc("/", AnalyzePage)
 	http.HandleFunc("/analyze", AnalyzePage)
 	http.HandleFunc("/results", ResultsPage)
+	http.HandleFunc("/success", Success)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 func AnalyzePage(w http.ResponseWriter, r *http.Request) {
+    page := `
+                 <!DOCTYPE html>
+                 <html>
+                 <head>
+                   <title>Sentimentalyzer</title>
+                   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+                 </head>
+                 <body>
+                   <div class="container">
+                     <p>Welcome to Sentimentalyzer, the world's simplest sentiment analyzer!</p>
+                     <form action="/results" method="post">
+                       <div class="form-group">
+                         <label for="feelings">How are you feeling?</label>
+                         <textarea class="form-control" rows="5" name="feelings" id="feelings"></textarea>
+                       </div>
+                       <button type="submit" class="btn btn-primary">Submit</button>
+                     </form>
+                   </div>
+                 </body>
+                 </html>
+             `
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Sentimentalyzer</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  </head>
-  <body>
-    <div class="container">
-      <p>Welcome to Sentimentalyzer, the world's simplest sentiment analyzer!</p>
-      <form action="/results" method="post">
-        <div class="form-group">
-          <label for="feelings">How are you feeling?</label>
-          <textarea class="form-control" rows="5" name="feelings" id="feelings"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-    </div>
-  </body>
-  </html>
-  `)
+	fmt.Fprint(w, page)
+}
+
+func Success(w http.ResponseWriter, r *http.Request) {
+    page := `
+                     <!DOCTYPE html>
+                     <html>
+                     <head>
+                       <title>Sentimentalyzer</title>
+                       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+                     </head>
+                     <body>
+                       <div class="container">
+                         <p>Welcome to Sentimentalyzer, the world's simplest sentiment analyzer!</p>
+                         <hr>
+                         <p>If you're seeing this page, all tests have passed and deployment was successful</p>
+                       </div>
+                     </body>
+                     </html>
+                 `
+	fmt.Fprint(w, page)
 }
 
 func ResultsPage(w http.ResponseWriter, r *http.Request) {
