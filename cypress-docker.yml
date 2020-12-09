@@ -394,3 +394,8 @@ Resources:
         - Key: com.docker.compose.service
           Value: sentimentalyzer
     Type: AWS::IAM::Role
+
+Outputs:
+  LoadBalancerUrl:
+    Description: Url to call web service
+    Value: !GetAtt LoadBalancer.DNSName

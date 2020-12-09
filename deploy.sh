@@ -26,3 +26,6 @@ else
   aws cloudformation wait stack-update-complete \
     --stack-name ${STACK_NAME}
 fi
+
+echo "Getting Stack-Outputs..."
+aws cloudformation describe-stacks --stack-name ${STACK_NAME}
