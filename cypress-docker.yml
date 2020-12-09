@@ -6,20 +6,35 @@ Parameters:
 
 Resources:
 
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/${StackInfo}/e2e"
+
+  CypressLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/${StackInfo}/cypress"
+
+  SentimentalyzerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/${StackInfo}/sentimentalyzer"
+
   CloudMap:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
-      Description: Service Map for Docker Compose project e2e
-      Name: e2e.local
+      Description: Service Map for Docker Compose project!Sub "${StackInfo}
+      Name: !Sub "${StackInfo}.local"
       Vpc: vpc-8016c2f9
 
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: e2e
+      ClusterName: !Sub "${StackInfo}"
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
 
   CypressService:
     Type: AWS::ECS::Service
@@ -55,7 +70,7 @@ Resources:
               - Arn
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.service
           Value: cypress
       TaskDefinition:
@@ -82,13 +97,13 @@ Resources:
       ContainerDefinitions:
         - Command:
             - eu-west-1.compute.internal
-            - e2e.local
+            - !Sub "${StackInfo}.local"
           Essential: false
           Image: docker/ecs-searchdomain-sidecar:1.0
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: ec2-cypress-init-cypr
+              awslogs-group: !Sub "/${StackInfo}/cypress"
               awslogs-region: eu-west-1
               awslogs-stream-prefix: web
           Name: Cypress_ResolvConf_InitContainer
@@ -104,7 +119,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: ec2-cypress-init-cypr
+              awslogs-group: !Sub "/${StackInfo}/cypress"
               awslogs-region: eu-west-1
               awslogs-stream-prefix: web
           Name: cypress
@@ -112,7 +127,7 @@ Resources:
       Cpu: "256"
       ExecutionRoleArn:
         Ref: CypressTaskExecutionRole
-      Family: e2e-cypress
+      Family: !Sub "${StackInfo}-cypress"
       Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
@@ -135,7 +150,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.service
           Value: cypress
 
@@ -153,10 +168,10 @@ Resources:
   DefaultNetwork:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: e2e Security Group for default network
+      GroupDescription: !Sub "${StackInfo} Security Group for default network"
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.network
           Value: default
       VpcId: vpc-8016c2f9
@@ -183,24 +198,19 @@ Resources:
         - subnet-0f961828417a4b761
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
       Type: network
-
-  LogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: /docker-compose/e2e
 
   MydataAccessPoint:
     Type: AWS::EFS::AccessPoint
     Properties:
       AccessPointTags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.volume
           Value: mydata
         - Key: Name
-          Value: e2e_mydata
+          Value: !Sub "${StackInfo}_mydata"
       FileSystemId:
         Ref: MydataFilesystem
 
@@ -211,11 +221,11 @@ Resources:
       Encrypted: true
       FileSystemTags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.volume
           Value: mydata
         - Key: Name
-          Value: e2e_mydata
+          Value: !Sub "${StackInfo}_mydata"
 
   MydataNFSMountTargetOnSubnet086a4ae3e9cd7d91b:
     Type: AWS::EFS::MountTarget
@@ -274,7 +284,7 @@ Resources:
               - Arn
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.service
           Value: sentimentalyzer
       TaskDefinition:
@@ -316,7 +326,7 @@ Resources:
       Protocol: TCP
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
       TargetType: ip
       VpcId: vpc-8016c2f9
 
@@ -326,13 +336,13 @@ Resources:
       ContainerDefinitions:
         - Command:
             - eu-west-1.compute.internal
-            - e2e.local
+            - !Sub "${StackInfo}.local"
           Essential: false
           Image: docker/ecs-searchdomain-sidecar:1.0
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: ec2-cypress-init-sent
+              awslogs-group: !Sub "/${StackInfo}/sentimentalyzer"
               awslogs-region: eu-west-1
               awslogs-stream-prefix: web
           Name: Sentimentalyzer_ResolvConf_InitContainer
@@ -348,7 +358,7 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: ec2-cypress-init-sent
+              awslogs-group: !Sub "/${StackInfo}/sentimentalyzer"
               awslogs-region: eu-west-1
               awslogs-stream-prefix: web
           Name: sentimentalyzer
@@ -359,7 +369,7 @@ Resources:
       Cpu: "256"
       ExecutionRoleArn:
         Ref: SentimentalyzerTaskExecutionRole
-      Family: e2e-sentimentalyzer
+      Family: !Sub "${StackInfo}-sentimentalyzer"
       Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
@@ -380,7 +390,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
       Tags:
         - Key: com.docker.compose.project
-          Value: e2e
+          Value: !Sub "${StackInfo}"
         - Key: com.docker.compose.service
           Value: sentimentalyzer
     Type: AWS::IAM::Role
