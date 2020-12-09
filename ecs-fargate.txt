@@ -1,72 +1,22 @@
 https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html
 
-cluster = cypressinit
-config_name = cypressinit
+cluster = cypresssd
+config_name = cypresssd
 role_name = ecsTaskExecutionRole
-profile_name = cypressinitprofile
+profile_name = cypresssdprofile
+private_dns_namespace = cypresssd
 region = eu-west-1
-
-ATTACH ROLE:
-aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+access_key = AKIA3CYKIVHLI3MPUXUY
+secret = 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
 
 CREATE CLUSTER CONFIG:
-ecs-cli configure --cluster cypressinit --default-launch-type FARGATE --config-name cypressinit --region eu-west-1
+ecs-cli configure --cluster cypresssd --region eu-west-1 --default-launch-type EC2 --config-name cypresssd
 
 CREATE CLI PROFILE
-ecs-cli configure profile --access-key AKIA3CYKIVHLI3MPUXUY --secret-key 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 --profile-name cypressinitprofile
+ecs-cli configure profile --access-key AKIA3CYKIVHLI3MPUXUY --secret-key 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 --profile-name cypresssdprofile
 
-CREATE CLUSTER
-ecs-cli up --cluster-config cypressinit --ecs-profile cypressinitprofile
-    VPC created: vpc-09b7465f101f78ba6
-    Subnet created: subnet-084b1e5ea8068cdd4
-    Subnet created: subnet-0d879ab79e8107a64
+CREATE  BACKEND SERVICE
+ecs-cli compose --project-name backend service up --private-dns-namespace cypresssd --vpc vpc-09b7465f101f78ba6 --enable-service-discovery
 
-RETRIEVE DEFAULT VPC
-aws ec2 describe-security-groups --filters Name=vpc-id,Values=vpc-09b7465f101f78ba6 --region eu-west-1
-    {
-        "SecurityGroups": [
-            {
-                "Description": "default VPC security group",
-                "GroupName": "default",
-                "IpPermissions": [
-                    {
-                        "IpProtocol": "-1",
-                        "IpRanges": [],
-                        "Ipv6Ranges": [],
-                        "PrefixListIds": [],
-                        "UserIdGroupPairs": [
-                            {
-                                "GroupId": "sg-0acbfd112e98ec0f8",
-                                "UserId": "761841363414"
-                            }
-                        ]
-                    }
-                ],
-                "OwnerId": "761841363414",
-                "GroupId": "sg-0acbfd112e98ec0f8",
-                "IpPermissionsEgress": [
-                    {
-                        "IpProtocol": "-1",
-                        "IpRanges": [
-                            {
-                                "CidrIp": "0.0.0.0/0"
-                            }
-                        ],
-                        "Ipv6Ranges": [],
-                        "PrefixListIds": [],
-                        "UserIdGroupPairs": []
-                    }
-                ],
-                "VpcId": "vpc-09b7465f101f78ba6"
-            }
-        ]
-    }
-
-ADD SECURITY GROUP
-aws ec2 authorize-security-group-ingress --group-id sg-0acbfd112e98ec0f8 --protocol tcp --port 8000 --cidr 0.0.0.0/0 --region eu-west-1
-
-DEPLOY CLUSTER
-ecs-cli compose --project-name cypressinit --file './e2e/docker-compose.aws.yml' service up --create-log-groups --cluster-config cypressinit --ecs-profile cypressinitprofile
-
-VIEW CLUSTER
-ecs-cli compose --project-name cypressinit --file './e2e/docker-compose.aws.yml' service ps --cluster-config cypressinit --ecs-profile cypressinitprofile
+CREATE FRONTEND SERVICE
+ecs-cli compose --project-name frontend service up --private-dns-namespace cypresssd --vpc vpc-04deee8176dce7d7d --enable-service-discovery
